@@ -1604,3 +1604,113 @@ textarea:disabled {
         justify-content: center;
     }
 }
+
+/* === FOOTER PROFISSIONAL === */
+.site-footer {
+    background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+    color: #e8eaed;
+}
+
+.footer-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.footer-top {
+    padding: 3rem 0 2rem 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.footer-brand .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer-brand .brand-sub {
+    color: #b0b6bb;
+    margin-top: 0.5rem;
+}
+
+.footer-social {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.footer-social a {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #e8eaed;
+    background: rgba(255,255,255,0.08);
+    text-decoration: none;
+}
+
+.footer-social a:hover {
+    background: rgba(255,255,255,0.16);
+    color: #fff;
+}
+
+.footer-col h4 {
+    color: #fff;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+}
+
+.footer-col ul { list-style: none; }
+.footer-col li { margin: 0.375rem 0; }
+.footer-col a {
+    color: #cfd3d7;
+    text-decoration: none;
+    font-size: 0.92rem;
+}
+.footer-col a:hover { color: #fff; }
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 1.25rem 0 2rem 0;
+}
+
+.footer-disclaimer {
+    color: #b0b6bb;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.footer-legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.footer-links a { color: #cfd3d7; text-decoration: none; font-size: 0.9rem; }
+.footer-links a:hover { color: #fff; text-decoration: underline; }
+.footer-links span { color: #5f6368; }
+.footer-copy { color: #cfd3d7; font-size: 0.9rem; }
+
+@media (max-width: 900px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+    .footer-grid { grid-template-columns: 1fr; }
+    .footer-legal { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+}
