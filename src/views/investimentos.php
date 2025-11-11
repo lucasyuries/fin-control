@@ -182,7 +182,7 @@
                 <input type="hidden" id="ticker" name="ticker">
                 <div id="selected-stock" class="selected-stock"></div>
             </div>
-            
+
             <div class="form-row">
                 <div class="form-group">
                     <label for="data">Data da Compra</label>
@@ -539,10 +539,7 @@ function calculateTotal() {
     document.getElementById('valor').dataset.total = total;
 }
 
-// =============================================
-// STOCK AUTOCOMPLETE FUNCTIONALITY
-// =============================================
-let searchTimeout;
+// Sugestões e cotações externas removidas. O usuário digita o ticker/nome e preenche manualmente o preço.
 const searchInput = document.getElementById('stock-search');
 const suggestionsDiv = document.getElementById('stock-suggestions');
 const selectedStockDiv = document.getElementById('selected-stock');
@@ -553,90 +550,18 @@ const priceInfoSpan = document.getElementById('current-price-info');
 
 if (searchInput) {
     searchInput.addEventListener('input', function() {
-        const query = this.value.trim();
-        
-        clearTimeout(searchTimeout);
-        
-        if (query.length < 1) {
-            suggestionsDiv.innerHTML = '';
-            suggestionsDiv.style.display = 'none';
-            return;
-        }
-        
-        searchTimeout = setTimeout(() => {
-            searchStocks(query);
-        }, 300);
+        const q = this.value.trim();
+        // Preenche campos ocultos com o que o usuário digitou
+        descricaoInput.value = q;
+        tickerInput.value = q.toUpperCase();
+        // Sem cotações: limpa info de preço automático
+        priceInfoSpan.textContent = '';
+        suggestionsDiv.innerHTML = '';
+        suggestionsDiv.style.display = 'none';
+        selectedStockDiv.innerHTML = '';
+        selectedStockDiv.style.display = 'none';
     });
 }
-
-function searchStocks(query) {
-    fetch(`<?php echo BASE_URL; ?>/api/stocks.php?action=search&q=${encodeURIComponent(query)}`)
-        .then(response => response.json())
-        .then(stocks => {
-            if (stocks.length === 0) {
-                suggestionsDiv.innerHTML = '<div class="stock-suggestion-item no-results">Nenhuma ação encontrada</div>';
-            } else {
-                suggestionsDiv.innerHTML = stocks.map(stock => `
-                    <div class="stock-suggestion-item" onclick="selectStock('${stock.ticker}', '${escapeHtml(stock.name)}', ${stock.current_price})">
-                        <div class="stock-ticker">${stock.ticker}</div>
-                        <div class="stock-info">
-                            <div class="stock-name">${escapeHtml(stock.name)}</div>
-                            <div class="stock-price">R$ ${parseFloat(stock.current_price).toFixed(2)}</div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            suggestionsDiv.style.display = 'block';
-        })
-        .catch(error => {
-            console.error('Error searching stocks:', error);
-        });
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function selectStock(ticker, name, currentPrice) {
-    descricaoInput.value = `${ticker} - ${name}`;
-    tickerInput.value = ticker;
-    valorInput.value = parseFloat(currentPrice).toFixed(2);
-    
-    priceInfoSpan.textContent = `Cotação atual: R$ ${parseFloat(currentPrice).toFixed(2)}`;
-    priceInfoSpan.style.color = '#1a73e8';
-    
-    selectedStockDiv.innerHTML = `
-        <div class="selected-stock-badge">
-            <strong>${ticker}</strong> - ${escapeHtml(name)}
-            <button type="button" onclick="clearSelection()" class="clear-selection">×</button>
-        </div>
-    `;
-    selectedStockDiv.style.display = 'block';
-    
-    searchInput.value = '';
-    suggestionsDiv.innerHTML = '';
-    suggestionsDiv.style.display = 'none';
-    
-    calculateTotal();
-}
-
-function clearSelection() {
-    descricaoInput.value = '';
-    tickerInput.value = '';
-    valorInput.value = '';
-    priceInfoSpan.textContent = '';
-    selectedStockDiv.innerHTML = '';
-    selectedStockDiv.style.display = 'none';
-    searchInput.focus();
-}
-
-document.addEventListener('click', function(e) {
-    if (suggestionsDiv && !e.target.closest('.stock-search-wrapper')) {
-        suggestionsDiv.style.display = 'none';
-    }
-});
 
 // Antes de enviar o form, atualiza o valor com o total
 document.querySelector('.modal-form').addEventListener('submit', function(e) {
@@ -644,6 +569,9 @@ document.querySelector('.modal-form').addEventListener('submit', function(e) {
     const valorUnitario = parseFloat(document.getElementById('valor').value) || 0;
     const total = valorUnitario * quantidade;
     document.getElementById('valor').value = total.toFixed(2);
+    // Garante que descrição/ticker estejam definidos a partir do campo de busca
+    if (!descricaoInput.value) descricaoInput.value = (searchInput.value || '').trim();
+    if (!tickerInput.value) tickerInput.value = (searchInput.value || '').trim().toUpperCase();
 });
 </script>
 

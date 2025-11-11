@@ -9,8 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const chartData = window.dashboardChartData || [];
     const categoryData = window.dashboardCategoryData || [];
 
-    console.log('Chart Data:', chartData);
-    console.log('Category Data:', categoryData);
+    // Dados dos gráficos são fornecidos pelo PHP via variáveis globais
 
     // Configuração de cores
     const colors = {
@@ -55,9 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const receitasData = sortedMonths.map(mes => monthlyData[mes].receitas);
         const despesasData = sortedMonths.map(mes => monthlyData[mes].despesas);
         
-        console.log('Labels:', labels);
-        console.log('Receitas:', receitasData);
-        console.log('Despesas:', despesasData);
+    // Dados prontos para renderização do gráfico
         
         new Chart(ctx, {
             type: 'line',
@@ -160,7 +157,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     } else if (patrimonioCanvas) {
-        console.log('Nenhum dado para o gráfico de evolução');
         patrimonioCanvas.parentElement.innerHTML = 
             '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">' +
             '<p>Adicione lançamentos para visualizar o gráfico</p></div>';
@@ -193,8 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const categorias = sortedCategories.map(c => c[0]);
         const valores = sortedCategories.map(c => c[1]);
         
-        console.log('Categorias:', categorias);
-        console.log('Valores:', valores);
+    // Dados de categoria prontos para renderização
         
         // Gerar cores dinâmicas
         const chartColors = [
@@ -273,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     } else if (categoryCanvas) {
-        console.log('Nenhum dado para o gráfico de categorias');
         categoryCanvas.parentElement.innerHTML = 
             '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">' +
             '<p>Adicione lançamentos para visualizar categorias</p></div>';

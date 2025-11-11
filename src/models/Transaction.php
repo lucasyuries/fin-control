@@ -144,20 +144,32 @@ class Transaction {
     }
 
     // Cria uma nova transação
+    /**
+     * Cria uma nova transação na tabela usando o schema atual (pt-BR).
+     * Aceita tanto chaves em inglês quanto em português para compatibilidade.
+     */
     public function create($data) {
-        $this->db->query("
-            INSERT INTO transactions (user_id, category_id, description, amount, date, type, ticker, quantity, notes) 
-            VALUES (:user_id, :category_id, :description, :amount, :date, :type, :ticker, :quantity, :notes)
-        ");
-        $this->db->bind(':user_id', $data['user_id']);
-        $this->db->bind(':category_id', $data['category_id'] ?? null);
-        $this->db->bind(':description', $data['description']);
-        $this->db->bind(':amount', $data['amount']);
-        $this->db->bind(':date', $data['date']);
-        $this->db->bind(':type', $data['type']);
-        $this->db->bind(':ticker', $data['ticker'] ?? null);
-        $this->db->bind(':quantity', $data['quantity'] ?? null);
-        $this->db->bind(':notes', $data['notes'] ?? null);
+        // Normaliza chaves
+        $usuario_id   = $data['usuario_id']   ?? $data['user_id']      ?? null;
+        $categoria_id = $data['categoria_id'] ?? $data['category_id']  ?? null;
+        $descricao    = $data['descricao']    ?? $data['description']  ?? '';
+        $valor        = $data['valor']        ?? $data['amount']       ?? 0;
+        $dataMov      = $data['data']         ?? $data['date']         ?? date('Y-m-d');
+        $tipo         = $data['tipo']         ?? $data['type']         ?? '';
+        $ticker       = $data['ticker']       ?? null;
+        $quantidade   = $data['quantidade']   ?? $data['quantity']     ?? null;
+        $observacoes  = $data['observacoes']  ?? $data['notes']        ?? null;
+
+        $this->db->query("\n            INSERT INTO transactions (usuario_id, categoria_id, descricao, valor, data, tipo, ticker, quantidade, observacoes)\n            VALUES (:usuario_id, :categoria_id, :descricao, :valor, :data, :tipo, :ticker, :quantidade, :observacoes)\n        ");
+        $this->db->bind(':usuario_id', $usuario_id);
+        $this->db->bind(':categoria_id', $categoria_id);
+        $this->db->bind(':descricao', $descricao);
+        $this->db->bind(':valor', $valor);
+        $this->db->bind(':data', $dataMov);
+        $this->db->bind(':tipo', $tipo);
+        $this->db->bind(':ticker', $ticker);
+        $this->db->bind(':quantidade', $quantidade);
+        $this->db->bind(':observacoes', $observacoes);
         
         return $this->db->execute();
     }

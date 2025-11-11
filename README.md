@@ -1,6 +1,6 @@
-# 💰 FinControl — Sistema de Controle Financeiro (PHP + MySQL)
+# FinControl – Sistema de Controle Financeiro (PHP + MySQL)
 
-Aplicação web simples para gerenciar receitas, despesas e investimentos. Inclui cadastro de usuários, lançamentos, metas e um recurso de ações com comparação entre preço médio e preço atual.
+Aplicação web para gerenciar usuários, receitas, despesas, ativos (registro manual de operações) e metas financeiras.
 
 ## 🧩 Estrutura do Projeto
 ```
@@ -11,7 +11,7 @@ fin-control/
 │   └── instalacao_completa.sql # Script SQL único (cria todas as tabelas + seeds)
 ├── public/
 │   ├── index.php               # Roteador/ponto de entrada
-│   ├── api/stocks.php          # API de ações (busca, cotação e portfólio)
+│   ├── (API removida)          # Sem endpoints externos neste estágio
 │   ├── css/style.css           # Estilos
 │   └── js/app.js               # Scripts (gráficos e UI)
 ├── src/
@@ -33,7 +33,7 @@ C:\xampp\htdocs\fin-control
 3) Crie o banco executando o SQL:
 - Abra http://localhost/phpmyadmin
 - Clique em SQL e cole todo o conteúdo de `database/instalacao_completa.sql`
-- Execute. Deve aparecer o banco `fin_control` com as tabelas: users, categories, transactions, stock_prices, goals, password_resets.
+- Execute. Deve aparecer o banco `fin_control` com as tabelas: users, categories, transactions, goals, password_resets.
 
 4) Configure o arquivo `config/config.php` (caso necessário):
 ```php
@@ -52,17 +52,9 @@ Crie sua conta e faça login.
 
 ## 🧠 Funcionalidades Principais
 - Autenticação: cadastro, login e recuperação de senha.
-- Lançamentos: receitas, despesas e ativos (ações via ticker + quantidade).
+- Lançamentos: receitas, despesas e ativos (registro manual de ticker, quantidade e valor total).
 - Metas: criação e acompanhamento de progresso.
-- Ações: busca por ticker, cotação (com cache em `stock_prices`) e comparação com preço médio do usuário.
 - Dashboard: gráficos e resumos financeiros.
-
-## 🔗 APIs Internas
-- GET `public/api/stocks.php?action=search&q=PETR` — busca ações por termo.
-- GET `public/api/stocks.php?action=quote&ticker=PETR4` — retorna cotação atual (usa cache e pode consultar API externa).
-- GET `public/api/stocks.php?action=portfolio` — resumo do portfólio do usuário logado (média vs preço atual).
-
-Observação: os endpoints exigem sessão ativa (login).
 
 ## 🛠 Requisitos
 - PHP 7.4+ (XAMPP recomendado)
@@ -79,4 +71,4 @@ Observação: os endpoints exigem sessão ativa (login).
 Projeto acadêmico — uso educacional.
 
 ---
-Feito para ser simples de rodar e avaliar.
+Feito para ser simples de rodar e avaliar. API de ações removida nesta versão para foco na base financeira.
