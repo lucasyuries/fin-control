@@ -1,0 +1,28 @@
+# Arquivos de configuração sensíveis
+config/config.php
+
+# Logs do servidor
+*.log
+
+# Arquivos de cache do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários do editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Dependências (caso seja adicionado Composer no futuro)
+/vendor/
+
+# Arquivos de backup
+*.bak
+*.backup
+*.old
+
+# Arquivos de ambiente
+.env
+.env.local

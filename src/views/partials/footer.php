@@ -1,0 +1,6 @@
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="<?php echo BASE_URL; ?>/public/js/app.js"></script>
+</body>
+</html>
