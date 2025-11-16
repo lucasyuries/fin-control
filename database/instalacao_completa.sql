@@ -1,6 +1,3 @@
--- Fin-Control • Instalação do Banco (MySQL 8+)
--- Estrutura limpa, objetiva e sem tabela de ações (cotações via API).
-
 DROP DATABASE IF EXISTS `fin_control`;
 CREATE DATABASE `fin_control` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `fin_control`;
@@ -36,13 +33,12 @@ CREATE TABLE `transactions` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `usuario_id` INT UNSIGNED NOT NULL,
   `categoria_id` INT UNSIGNED DEFAULT NULL,
-  `tipo` ENUM('receita','despesa','ativo') NOT NULL,
+  `tipo` ENUM('receita','despesa') NOT NULL,
   `descricao` VARCHAR(255) NOT NULL,
   `valor` DECIMAL(12,2) NOT NULL,
   `data` DATE NOT NULL,
-  `ticker` VARCHAR(20) DEFAULT NULL,
-  `quantidade` DECIMAL(12,4) DEFAULT NULL,
   `observacoes` TEXT,
+  `compensada_por` INT UNSIGNED DEFAULT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -50,9 +46,9 @@ CREATE TABLE `transactions` (
   KEY `fk_transacao_categoria` (`categoria_id`),
   KEY `idx_data` (`data`),
   KEY `idx_tipo` (`tipo`),
-  KEY `idx_ticker` (`ticker`),
   CONSTRAINT `fk_transacao_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_transacao_categoria` FOREIGN KEY (`categoria_id`) REFERENCES `categories`(`id`) ON DELETE SET NULL
+  CONSTRAINT `fk_transacao_categoria` FOREIGN KEY (`categoria_id`) REFERENCES `categories`(`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_compensada_por` FOREIGN KEY (`compensada_por`) REFERENCES `transactions`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- password_resets
@@ -72,7 +68,7 @@ CREATE TABLE `password_resets` (
 CREATE TABLE `goals` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `usuario_id` INT UNSIGNED NOT NULL,
-  `tipo` ENUM('patrimonio','ativo','provento') NOT NULL DEFAULT 'patrimonio',
+  `tipo` ENUM('patrimonio') NOT NULL DEFAULT 'patrimonio',
   `nome` VARCHAR(100) NOT NULL,
   `valor_objetivo` DECIMAL(12,2) NOT NULL,
   `aporte_mensal` DECIMAL(12,2) DEFAULT 0.00,

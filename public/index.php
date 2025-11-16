@@ -1,9 +1,9 @@
 <?php
-require_once '../src/controllers/AuthController.php';
-require_once '../src/controllers/DashboardController.php';
-require_once '../src/controllers/TransactionController.php';
-require_once '../src/controllers/ProfileController.php';
-require_once '../src/controllers/GoalController.php';
+require_once __DIR__ . '/../src/controllers/AuthController.php';
+require_once __DIR__ . '/../src/controllers/DashboardController.php';
+require_once __DIR__ . '/../src/controllers/TransactionController.php';
+require_once __DIR__ . '/../src/controllers/ProfileController.php';
+require_once __DIR__ . '/../src/controllers/GoalController.php';
 
 $url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : '';
 $url = filter_var($url, FILTER_SANITIZE_URL);
@@ -13,22 +13,18 @@ switch ($url) {
         $authController = new AuthController();
         $_SERVER['REQUEST_METHOD'] == 'POST' ? $authController->register() : $authController->showRegisterForm();
         break;
-    
     case 'login':
         $authController = new AuthController();
         $_SERVER['REQUEST_METHOD'] == 'POST' ? $authController->login() : $authController->showLoginForm();
         break;
-    
     case 'forgot-password':
         $authController = new AuthController();
         $_SERVER['REQUEST_METHOD'] == 'POST' ? $authController->forgotPassword() : $authController->showForgotPasswordForm();
         break;
-    
     case 'reset-password':
         $authController = new AuthController();
         $_SERVER['REQUEST_METHOD'] == 'POST' ? $authController->resetPassword() : $authController->showResetPasswordForm();
         break;
-    
     case 'logout':
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -38,67 +34,54 @@ switch ($url) {
         setcookie(session_name(), '', time() - 3600, '/');
         header('Location: ' . BASE_URL . '/login');
         exit();
-
     case 'dashboard':
         $dashboardController = new DashboardController();
         $dashboardController->index();
         break;
-    
     case 'profile':
         $profileController = new ProfileController();
         $profileController->index();
         break;
-    
     case 'update-profile':
         $profileController = new ProfileController();
         $profileController->updateProfile();
         break;
-    
     case 'change-password':
         $profileController = new ProfileController();
         $profileController->changePassword();
         break;
-    
     case 'lancamentos':
         $transactionController = new TransactionController();
         $transactionController->index();
         break;
-    
-    case 'lancamentos/criar':
+    case 'lancamentos/compensar':
         $transactionController = new TransactionController();
-        $transactionController->store();
+        $transactionController->compensar();
         break;
-    
-    case 'investimentos':
+    case 'lancamentos/editar':
         $transactionController = new TransactionController();
-        $transactionController->investments();
+        $transactionController->editar();
         break;
-    
-    case 'investimentos/criar':
+    case 'lancamentos/excluir':
         $transactionController = new TransactionController();
-        $transactionController->store();
+        $transactionController->excluir();
         break;
-    
     case 'metas':
         $goalController = new GoalController();
         $goalController->index();
         break;
-    
-    case (preg_match('/^metas\/create$/', $url) ? true : false):
+    case 'metas/create':
         $goalController = new GoalController();
         $goalController->create();
         break;
-    
-    case (preg_match('/^metas\/update\/(\d+)$/', $url, $matches) ? true : false):
+    case (preg_match('/^metas\\/update\\/(\\d+)$/', $url, $matches) ? true : false):
         $goalController = new GoalController();
         $goalController->update($matches[1]);
         break;
-    
-    case (preg_match('/^metas\/delete\/(\d+)$/', $url, $matches) ? true : false):
+    case (preg_match('/^metas\\/delete\\/(\\d+)$/', $url, $matches) ? true : false):
         $goalController = new GoalController();
         $goalController->delete($matches[1]);
         break;
-    
     default:
         $authController = new AuthController();
         $authController->login();

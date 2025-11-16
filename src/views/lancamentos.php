@@ -15,14 +15,6 @@
         </svg>
         Lançamentos
     </a>
-    <a class="nav-link" href="<?php echo BASE_URL; ?>/investimentos">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M5.5 9.511c.076.954.83 1.697 2.182 1.785V12h.6v-.709c1.4-.098 2.218-.846 2.218-1.932 0-.987-.626-1.496-1.745-1.76l-.473-.112V5.57c.6.068.982.396 1.074.85h1.052c-.076-.919-.864-1.638-2.126-1.716V4h-.6v.719c-1.195.117-2.01.836-2.01 1.853 0 .9.606 1.472 1.613 1.707l.397.098v2.034c-.615-.093-1.022-.43-1.114-.9H5.5zm2.177-2.166c-.59-.137-.91-.416-.91-.836 0-.47.345-.822.915-.925v1.76h-.005zm.692 1.193c.717.166 1.048.435 1.048.91 0 .542-.412.914-1.135.982V8.518l.087.02z"/>
-            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-            <path d="M8 13.5a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11zm0 .5A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/>
-        </svg>
-        Investimentos
-    </a>
     <a class="nav-link" href="<?php echo BASE_URL; ?>/metas">
         <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
             <path d="M9.669.864 8 0 6.331.864l-1.858.282-.842 1.68-1.337 1.32L2.6 6l-.306 1.854 1.337 1.32.842 1.68 1.858.282L8 12l1.669-.864 1.858-.282.842-1.68 1.337-1.32L13.4 6l.306-1.854-1.337-1.32-.842-1.68L9.669.864zm1.196 1.193.684 1.365 1.086 1.072L12.387 6l.248 1.506-1.086 1.072-.684 1.365-1.51.229L8 10.874l-1.355-.702-1.51-.229-.684-1.365-1.086-1.072L3.614 6l-.25-1.506 1.087-1.072.684-1.365 1.51-.229L8 1.126l1.356.702 1.509.229z"/>
@@ -90,6 +82,12 @@
                                 <span class="type-badge <?php echo $transacao['tipo']; ?>">
                                     <?php echo ucfirst($transacao['tipo']); ?>
                                 </span>
+                                <?php if (!empty($transacao['compensada_por'])): ?>
+                                    <span class="compensada-indicator" title="Compensada">
+                                        <svg width="14" height="14" fill="#34a853" viewBox="0 0 16 16" style="vertical-align:middle;"><path d="M13.485 1.929a1 1 0 0 1 0 1.414l-7.071 7.071-3.182-3.182a1 1 0 1 1 1.414-1.414l1.768 1.768 6.364-6.364a1 1 0 0 1 1.414 0z"/></svg>
+                                        <span style="color:#34a853;font-size:0.85em;">Compensada</span>
+                                    </span>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <span class="category-tag"><?php echo htmlspecialchars($transacao['categoria_nome'] ?? 'Sem categoria'); ?></span>
@@ -101,16 +99,56 @@
                             </td>
                             <td class="text-center">
                                 <button class="btn-icon" title="Editar">
-                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                                    </svg>
-                                </button>
-                                <button class="btn-icon" title="Excluir">
-                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                    </svg>
-                                </button>
+                                    <button class="btn-icon" title="Editar" type="button" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($transacao), ENT_QUOTES, 'UTF-8'); ?>)">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-icon" title="Excluir" type="button" onclick="openDeleteModal(<?php echo $transacao['id']; ?>)">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                        </svg>
+                                    </button>
+<!-- Modal de Exclusão de Lançamento -->
+<div class="modal-overlay" id="deleteModalOverlay" onclick="closeDeleteModal()">
+    <div class="modal-container" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2 class="modal-title">Excluir Lançamento</h2>
+            <button class="modal-close" onclick="closeDeleteModal()">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                </svg>
+            </button>
+        </div>
+        <form id="deleteForm" action="<?php echo BASE_URL; ?>/lancamentos/excluir" method="POST" class="modal-form">
+            <input type="hidden" name="id" id="deleteId" value="">
+            <p>Tem certeza que deseja excluir este lançamento?</p>
+            <div class="modal-footer">
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit btn-danger">Excluir</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openDeleteModal(id) {
+    document.getElementById('deleteModalOverlay').classList.add('active');
+    document.getElementById('deleteId').value = id;
+}
+function closeDeleteModal() {
+    document.getElementById('deleteModalOverlay').classList.remove('active');
+    document.getElementById('deleteForm').reset();
+}
+</script>
+                                <?php if (empty($transacao['compensada_por'])): ?>
+                                    <button class="btn-icon btn-compensar" title="Compensar" type="button" onclick="openCompensarModal(<?php echo $transacao['id']; ?>, '<?php echo $transacao['tipo']; ?>')">
+                                        <svg width="16" height="16" fill="#1a73e8" viewBox="0 0 16 16"><path d="M8.5 1a.5.5 0 0 0-1 0v6.5H1a.5.5 0 0 0 0 1h6.5V15a.5.5 0 0 0 1 0V8.5H15a.5.5 0 0 0 0-1H8.5V1z"/></svg>
+                                    </button>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <?php endif; ?>
@@ -627,6 +665,152 @@ function filterTransactions(type) {
             row.style.display = 'none';
         }
     });
+}
+</script>
+
+<!-- Modal de Compensação -->
+<div class="modal-overlay" id="compensarModalOverlay" onclick="closeCompensarModal()">
+    <div class="modal-container" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2 class="modal-title">Compensar Lançamento</h2>
+            <button class="modal-close" onclick="closeCompensarModal()">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                </svg>
+            </button>
+        </div>
+        <form id="compensarForm" action="<?php echo BASE_URL; ?>/lancamentos/compensar" method="POST" class="modal-form">
+            <input type="hidden" name="id" id="compensarId" value="">
+            <div class="form-group">
+                <label for="compensada_por">Selecione o lançamento para compensar:</label>
+                <select class="form-input" id="compensadaPorSelect" name="compensada_por" required>
+                    <option value="">Selecione...</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeCompensarModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Compensar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Compensar Modal Logic
+let allTransactions = <?php echo json_encode($data['transacoes']); ?>;
+function openCompensarModal(id, tipo) {
+    document.getElementById('compensarModalOverlay').classList.add('active');
+    document.getElementById('compensarId').value = id;
+    // List only transactions of opposite type and not compensated
+    const select = document.getElementById('compensadaPorSelect');
+    select.innerHTML = '<option value="">Selecione...</option>';
+    const oppositeType = tipo === 'receita' ? 'despesa' : 'receita';
+    allTransactions.forEach(function(tx) {
+        if (tx.tipo === oppositeType && (!tx.compensada_por || tx.compensada_por === null) && tx.id !== id) {
+            const opt = document.createElement('option');
+            opt.value = tx.id;
+            opt.textContent = `${tx.descricao} (${tx.tipo}, R$ ${parseFloat(tx.valor).toLocaleString('pt-BR', {minimumFractionDigits:2})}, ${tx.data})`;
+            select.appendChild(opt);
+        }
+    });
+}
+function closeCompensarModal() {
+    document.getElementById('compensarModalOverlay').classList.remove('active');
+    document.getElementById('compensarForm').reset();
+}
+</script>
+
+<!-- Modal de Edição de Lançamento -->
+<div class="modal-overlay" id="editModalOverlay" onclick="closeEditModal()">
+    <div class="modal-container" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2 class="modal-title">Editar Lançamento</h2>
+            <button class="modal-close" onclick="closeEditModal()">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                </svg>
+            </button>
+        </div>
+        <form id="editForm" action="<?php echo BASE_URL; ?>/lancamentos/editar" method="POST" class="modal-form">
+            <input type="hidden" name="id" id="editId" value="">
+            <div class="form-group">
+                <label for="editTipo">Tipo de Lançamento</label>
+                <select class="form-input" id="editTipo" name="tipo" required onchange="updateEditCategories()">
+                    <option value="">Selecione o tipo</option>
+                    <option value="receita">💰 Receita</option>
+                    <option value="despesa">💸 Despesa</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editDescricao">Descrição</label>
+                <input type="text" class="form-input" id="editDescricao" name="descricao" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="editCategoriaId">Categoria</label>
+                    <select class="form-input" id="editCategoriaId" name="categoria_id">
+                        <option value="">Selecionar categoria</option>
+                        <?php foreach($data['categorias'] as $categoria): ?>
+                            <option value="<?php echo $categoria['id']; ?>" data-tipo="<?php echo $categoria['tipo']; ?>">
+                                <?php echo htmlspecialchars($categoria['nome']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editData">Data</label>
+                    <input type="date" class="form-input" id="editData" name="data" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="editValor">Valor (R$)</label>
+                <input type="number" step="0.01" class="form-input" id="editValor" name="valor" required>
+            </div>
+            <div class="modal-footer">
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Salvar Alterações</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Editar Lançamento
+function openEditModal(transacao) {
+    if (typeof transacao === 'string') transacao = JSON.parse(transacao);
+    document.getElementById('editModalOverlay').classList.add('active');
+    document.getElementById('editId').value = transacao.id;
+    document.getElementById('editDescricao').value = transacao.descricao;
+    document.getElementById('editValor').value = transacao.valor;
+    document.getElementById('editData').value = transacao.data;
+    document.getElementById('editTipo').value = transacao.tipo;
+    updateEditCategories();
+    document.getElementById('editCategoriaId').value = transacao.categoria_id;
+}
+function closeEditModal() {
+    document.getElementById('editModalOverlay').classList.remove('active');
+    document.getElementById('editForm').reset();
+}
+function updateEditCategories() {
+    const tipo = document.getElementById('editTipo').value;
+    const categorias = document.querySelectorAll('#editCategoriaId option');
+    categorias.forEach(option => {
+        if (option.value === '') {
+            option.style.display = '';
+            return;
+        }
+        const categoriaTipo = option.dataset.tipo;
+        if (tipo === '' || categoriaTipo === tipo) {
+            option.style.display = '';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+    document.getElementById('editCategoriaId').value = '';
 }
 </script>
 

@@ -71,8 +71,13 @@ class AuthController {
             return;
         }
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-        $data = ['email' => trim($_POST['email']),'senha' => trim($_POST['senha'])];
-        $loggedInUser = $this->userModel->login($data['email'], $data['senha']);
+        $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+        $senha = isset($_POST['senha']) ? trim($_POST['senha']) : '';
+        if ($email === '' || $senha === '') {
+            $this->showLoginForm('Preencha todos os campos.');
+            return;
+        }
+        $loggedInUser = $this->userModel->login($email, $senha);
 
         if ($loggedInUser) {
             $this->createUserSession($loggedInUser);

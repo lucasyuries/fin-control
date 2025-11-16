@@ -34,7 +34,6 @@ class DashboardController {
             'total_despesas' => $summary['total_despesas'],
             'total_receitas_geral' => $totals['receitas'],
             'total_despesas_geral' => $totals['despesas'],
-            'total_ativos' => $totals['ativos'],
             'patrimonio_total' => $patrimonio,
             'chart_data' => $chartData,
             'category_data' => $categoryData,

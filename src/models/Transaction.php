@@ -8,6 +8,34 @@ class Transaction {
         $this->db = new Database();
     }
 
+    // Atualiza uma transação existente
+    public function update($id, $data, $usuario_id) {
+        $categoria_id = $data['categoria_id'] ?? null;
+        $descricao = $data['descricao'] ?? '';
+        $valor = $data['valor'] ?? 0;
+        $dataMov = $data['data'] ?? date('Y-m-d');
+        $tipo = $data['tipo'] ?? '';
+        $observacoes = $data['observacoes'] ?? null;
+        $this->db->query("UPDATE transactions SET categoria_id = :categoria_id, descricao = :descricao, valor = :valor, data = :data, tipo = :tipo, observacoes = :observacoes WHERE id = :id AND usuario_id = :usuario_id");
+        $this->db->bind(':categoria_id', $categoria_id);
+        $this->db->bind(':descricao', $descricao);
+        $this->db->bind(':valor', $valor);
+        $this->db->bind(':data', $dataMov);
+        $this->db->bind(':tipo', $tipo);
+        $this->db->bind(':observacoes', $observacoes);
+        $this->db->bind(':id', $id);
+        $this->db->bind(':usuario_id', $usuario_id);
+        return $this->db->execute();
+    }
+
+    // Exclui uma transação
+    public function delete($id, $usuario_id) {
+        $this->db->query("DELETE FROM transactions WHERE id = :id AND usuario_id = :usuario_id");
+        $this->db->bind(':id', $id);
+        $this->db->bind(':usuario_id', $usuario_id);
+        return $this->db->execute();
+    }
+
     // Retorna o resumo mensal de receitas e despesas
     public function getMonthlySummary($usuario_id) {
         // Query para somar as receitas do mês atual
@@ -41,7 +69,7 @@ class Transaction {
         ];
     }
     
-    // Retorna totais por tipo (receita, despesa, ativo)
+    // Retorna totais por tipo (receita, despesa)
     public function getTotalsByType($usuario_id) {
         $this->db->query("
             SELECT 
@@ -56,8 +84,7 @@ class Transaction {
         
         $totals = [
             'receitas' => 0.00,
-            'despesas' => 0.00,
-            'ativos' => 0.00
+            'despesas' => 0.00
         ];
         
         foreach($results as $row) {
@@ -65,22 +92,26 @@ class Transaction {
                 $totals['receitas'] = $row['total'];
             } elseif ($row['tipo'] == 'despesa') {
                 $totals['despesas'] = $row['total'];
-            } elseif ($row['tipo'] == 'ativo') {
-                $totals['ativos'] = $row['total'];
             }
         }
         
         return $totals;
     }
-    
-    // Retorna patrimônio total (receitas + ativos - despesas)
+
+    // Retorna patrimônio total (receitas - despesas)
     public function getPatrimonioTotal($usuario_id) {
+        if (!isset($usuario_id)) {
+            throw new InvalidArgumentException('usuario_id é obrigatório');
+        }
         $totals = $this->getTotalsByType($usuario_id);
-        return $totals['receitas'] + $totals['ativos'] - $totals['despesas'];
+        return $totals['receitas'] - $totals['despesas'];
     }
     
     // Retorna dados para o gráfico mensal (últimos 12 meses)
     public function getMonthlyChartData($usuario_id) {
+        if (!isset($usuario_id)) {
+            throw new InvalidArgumentException('usuario_id é obrigatório');
+        }
         $this->db->query("
             SELECT 
                 DATE_FORMAT(data, '%Y-%m') as mes,
@@ -99,6 +130,9 @@ class Transaction {
     
     // Retorna totais por categoria
     public function getTotalsByCategory($usuario_id) {
+        if (!isset($usuario_id)) {
+            throw new InvalidArgumentException('usuario_id é obrigatório');
+        }
         $this->db->query("
             SELECT 
                 c.nome as categoria,
@@ -117,6 +151,9 @@ class Transaction {
     
     // Busca todas as transações do usuário
     public function findAllByUserId($usuario_id) {
+        if (!isset($usuario_id)) {
+            throw new InvalidArgumentException('usuario_id é obrigatório');
+        }
         $this->db->query("
             SELECT t.*, c.nome as categoria_nome 
             FROM transactions t
@@ -128,8 +165,14 @@ class Transaction {
         return $this->db->resultSet();
     }
     
-    // Busca transações por tipo (receita, despesa, ativo)
+    // Busca transações por tipo (receita, despesa)
     public function findByType($usuario_id, $tipo) {
+        if (!isset($usuario_id)) {
+            throw new InvalidArgumentException('usuario_id é obrigatório');
+        }
+        if (!isset($tipo)) {
+            throw new InvalidArgumentException('tipo é obrigatório');
+        }
         $this->db->query("
             SELECT t.*, c.nome as categoria_nome 
             FROM transactions t
@@ -156,21 +199,27 @@ class Transaction {
         $valor        = $data['valor']        ?? $data['amount']       ?? 0;
         $dataMov      = $data['data']         ?? $data['date']         ?? date('Y-m-d');
         $tipo         = $data['tipo']         ?? $data['type']         ?? '';
-        $ticker       = $data['ticker']       ?? null;
-        $quantidade   = $data['quantidade']   ?? $data['quantity']     ?? null;
         $observacoes  = $data['observacoes']  ?? $data['notes']        ?? null;
+        $compensada_por = $data['compensada_por'] ?? null;
 
-        $this->db->query("\n            INSERT INTO transactions (usuario_id, categoria_id, descricao, valor, data, tipo, ticker, quantidade, observacoes)\n            VALUES (:usuario_id, :categoria_id, :descricao, :valor, :data, :tipo, :ticker, :quantidade, :observacoes)\n        ");
+        $this->db->query("\n            INSERT INTO transactions (usuario_id, categoria_id, descricao, valor, data, tipo, observacoes, compensada_por)\n            VALUES (:usuario_id, :categoria_id, :descricao, :valor, :data, :tipo, :observacoes, :compensada_por)\n        ");
         $this->db->bind(':usuario_id', $usuario_id);
         $this->db->bind(':categoria_id', $categoria_id);
         $this->db->bind(':descricao', $descricao);
         $this->db->bind(':valor', $valor);
         $this->db->bind(':data', $dataMov);
         $this->db->bind(':tipo', $tipo);
-        $this->db->bind(':ticker', $ticker);
-        $this->db->bind(':quantidade', $quantidade);
         $this->db->bind(':observacoes', $observacoes);
-        
+        $this->db->bind(':compensada_por', $compensada_por);
+        return $this->db->execute();
+    }
+
+    // Atualiza o campo compensada_por de uma transação
+    public function compensar($id, $compensada_por, $usuario_id) {
+        $this->db->query("UPDATE transactions SET compensada_por = :compensada_por WHERE id = :id AND usuario_id = :usuario_id");
+        $this->db->bind(':compensada_por', $compensada_por);
+        $this->db->bind(':id', $id);
+        $this->db->bind(':usuario_id', $usuario_id);
         return $this->db->execute();
     }
 }

@@ -29,7 +29,6 @@
 				<ul>
 					<li><a href="<?php echo BASE_URL; ?>/dashboard">Dashboard</a></li>
 					<li><a href="<?php echo BASE_URL; ?>/lancamentos">Lançamentos</a></li>
-					<li><a href="<?php echo BASE_URL; ?>/investimentos">Investimentos</a></li>
 					<li><a href="<?php echo BASE_URL; ?>/metas">Metas</a></li>
 					<li><a href="<?php echo BASE_URL; ?>/profile">Meu Perfil</a></li>
 				</ul>
@@ -50,7 +49,7 @@
 
 	<div class="footer-bottom">
 		<div class="footer-container">
-			<p class="footer-disclaimer">O FinControl possui caráter informativo e educativo. Não fazemos recomendação de compra ou venda de ativos. As informações podem conter dados de fontes públicas. Não nos responsabilizamos por decisões de investimento.</p>
+			<p class="footer-disclaimer">O FinControl possui caráter informativo e educativo. Não fazemos recomendação de compra ou venda de produtos financeiros. As informações podem conter dados de fontes públicas. Não nos responsabilizamos por decisões de investimento.</p>
 			<div class="footer-legal">
 				<nav class="footer-links">
 					<a href="#">Política de Privacidade</a>
