@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redefinir Senha - FinControl</title>
-    <link rel="stylesheet" href="/fin-control/public/css/style.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/public/css/style.css">
 </head>
 <body>
 
@@ -19,8 +19,8 @@
         </div>
 
         <?php if (isset($erro)): ?>
-            <div style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; color: #721c24; font-size: 0.9rem; text-align: center;">
-                <strong>❌ <?php echo $erro; ?></strong>
+            <div class="alert alert-error" style="text-align: center;">
+                <strong>❌ <?php echo htmlspecialchars($erro); ?></strong>
             </div>
         <?php endif; ?>
 
@@ -63,51 +63,7 @@
     </div>
 </div>
 
-<script>
-const novaSenhaInput = document.getElementById('nova_senha');
-const rules = {
-    length: document.getElementById('rule-length'),
-    uppercase: document.getElementById('rule-uppercase'),
-    lowercase: document.getElementById('rule-lowercase'),
-    special: document.getElementById('rule-special')
-};
-
-novaSenhaInput.addEventListener('input', () => {
-    const senha = novaSenhaInput.value;
-    
-    if (senha.length >= 8) {
-        rules.length.style.color = 'var(--success-color)';
-        rules.length.style.textDecoration = 'line-through';
-    } else {
-        rules.length.style.color = 'var(--text-secondary)';
-        rules.length.style.textDecoration = 'none';
-    }
-    
-    if (/[A-Z]/.test(senha)) {
-        rules.uppercase.style.color = 'var(--success-color)';
-        rules.uppercase.style.textDecoration = 'line-through';
-    } else {
-        rules.uppercase.style.color = 'var(--text-secondary)';
-        rules.uppercase.style.textDecoration = 'none';
-    }
-    
-    if (/[a-z]/.test(senha)) {
-        rules.lowercase.style.color = 'var(--success-color)';
-        rules.lowercase.style.textDecoration = 'line-through';
-    } else {
-        rules.lowercase.style.color = 'var(--text-secondary)';
-        rules.lowercase.style.textDecoration = 'none';
-    }
-    
-    if (/[^A-Za-z0-9]/.test(senha)) {
-        rules.special.style.color = 'var(--success-color)';
-        rules.special.style.textDecoration = 'line-through';
-    } else {
-        rules.special.style.color = 'var(--text-secondary)';
-        rules.special.style.textDecoration = 'none';
-    }
-});
-</script>
+<script src="<?php echo BASE_URL; ?>/public/js/app.js"></script>
 
 </body>
 </html>

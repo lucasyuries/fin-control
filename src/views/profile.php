@@ -1,27 +1,7 @@
 <?php require_once __DIR__ . '/partials/header.php'; ?>
 
-<!-- Mensagens de Sucesso/Erro -->
-<?php if (isset($data['success'])): ?>
-    <div style="background: #d4edda; border: 1px solid #c3e6cb; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; color: #155724; display: flex; align-items: center; gap: 0.75rem;">
-        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-        </svg>
-        <strong><?php echo htmlspecialchars($data['success']); ?></strong>
-    </div>
-<?php endif; ?>
-
-<?php if (isset($data['error'])): ?>
-    <div style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; color: #721c24; display: flex; align-items: center; gap: 0.75rem;">
-        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-        </svg>
-        <strong><?php echo htmlspecialchars($data['error']); ?></strong>
-    </div>
-<?php endif; ?>
-
 <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
     
-    <!-- Card de Informações do Perfil -->
     <div class="card">
         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; align-items: center; gap: 1rem;">
@@ -79,7 +59,6 @@
         </div>
     </div>
     
-    <!-- Card de Alteração de Senha -->
     <div class="card">
         <div class="card-header">
             <h3 style="margin: 0; font-size: 1.1rem; color: var(--text-primary);">
@@ -132,62 +111,5 @@
     </div>
     
 </div>
-
-<script>
-// Validação visual da senha
-const novaSenhaInput = document.getElementById('nova_senha');
-const rules = {
-    length: document.getElementById('rule-length'),
-    uppercase: document.getElementById('rule-uppercase'),
-    lowercase: document.getElementById('rule-lowercase'),
-    special: document.getElementById('rule-special')
-};
-
-novaSenhaInput.addEventListener('input', () => {
-    const senha = novaSenhaInput.value;
-    
-    if (senha.length >= 8) {
-        rules.length.style.color = 'var(--success-color)';
-        rules.length.style.textDecoration = 'line-through';
-    } else {
-        rules.length.style.color = 'var(--text-secondary)';
-        rules.length.style.textDecoration = 'none';
-    }
-    
-    if (/[A-Z]/.test(senha)) {
-        rules.uppercase.style.color = 'var(--success-color)';
-        rules.uppercase.style.textDecoration = 'line-through';
-    } else {
-        rules.uppercase.style.color = 'var(--text-secondary)';
-        rules.uppercase.style.textDecoration = 'none';
-    }
-    
-    if (/[a-z]/.test(senha)) {
-        rules.lowercase.style.color = 'var(--success-color)';
-        rules.lowercase.style.textDecoration = 'line-through';
-    } else {
-        rules.lowercase.style.color = 'var(--text-secondary)';
-        rules.lowercase.style.textDecoration = 'none';
-    }
-    
-    if (/[^A-Za-z0-9]/.test(senha)) {
-        rules.special.style.color = 'var(--success-color)';
-        rules.special.style.textDecoration = 'line-through';
-    } else {
-        rules.special.style.color = 'var(--text-secondary)';
-        rules.special.style.textDecoration = 'none';
-    }
-});
-
-// Remove mensagens após 5 segundos
-setTimeout(() => {
-    const alerts = document.querySelectorAll('[style*="background: #d4edda"], [style*="background: #f8d7da"]');
-    alerts.forEach(alert => {
-        alert.style.transition = 'opacity 0.5s ease';
-        alert.style.opacity = '0';
-        setTimeout(() => alert.remove(), 500);
-    });
-}, 5000);
-</script>
 
 <?php require_once __DIR__ . '/partials/footer.php'; ?>

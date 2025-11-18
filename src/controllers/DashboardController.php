@@ -1,19 +1,13 @@
 <?php
+// Arquivo: src/controllers/DashboardController.php
 require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../models/Transaction.php';
+require_once __DIR__ . '/../core/Session.php'; // Novo CORE
 
 class DashboardController {
 
     public function __construct() {
-        // CORREÇÃO: Inicia a sessão APENAS se ela não estiver ativa
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: ' . BASE_URL . '/login');
-            exit();
-        }
+        Session::requireLogin(); // Exige que o usuário esteja logado
     }
 
     public function index() {
@@ -37,7 +31,9 @@ class DashboardController {
             'patrimonio_total' => $patrimonio,
             'chart_data' => $chartData,
             'category_data' => $categoryData,
-            'recent_transactions' => array_slice($recentTransactions, 0, 10) // Últimas 10
+            'recent_transactions' => array_slice($recentTransactions, 0, 10), // Últimas 10
+            'flash_success' => Session::getFlash('success'),
+            'flash_error' => Session::getFlash('error')
         ];
         
         $pageTitle = 'Dashboard';

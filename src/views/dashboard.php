@@ -1,6 +1,16 @@
-<?php require_once __DIR__ . '/partials/header.php'; ?>
+<?php 
+// Arquivo: src/views/dashboard.php
+require_once __DIR__ . '/partials/header.php'; 
+?>
 
-<!-- Navegação de Abas -->
+<script>
+    // Define a variável BASE_URL globalmente para uso no JS
+    window.BASE_URL = '<?php echo BASE_URL; ?>'; 
+    // Dados para os gráficos (carregados pelo app.js)
+    window.dashboardChartData = <?php echo json_encode($data['chart_data'] ?? []); ?>;
+    window.dashboardCategoryData = <?php echo json_encode($data['category_data'] ?? []); ?>;
+</script>
+
 <nav class="nav-tabs">
     <a class="nav-link active" href="<?php echo BASE_URL; ?>/dashboard">
         <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
@@ -32,21 +42,18 @@ $patrimonio_total = $data['patrimonio_total'] ?? 0;
 $receitas_12m = $data['total_receitas_geral'] ?? 0;
 ?>
 
-<!-- Cards de Métricas -->
 <div class="metrics-grid">
-    <!-- Patrimônio Total -->
     <div class="metric-card">
         <div class="metric-icon patrimonio">💰</div>
         <div class="metric-label">Patrimônio total</div>
         <div class="metric-value">R$ <?php echo number_format($patrimonio_total, 2, ',', '.'); ?></div>
     </div>
 
-    <!-- Receitas (12M) -->
     <div class="metric-card">
         <div class="metric-icon receitas">📈</div>
         <div class="metric-label">
             Receitas (Total)
-            <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16" data-tooltip="Valor acumulado de todas as receitas.">
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                 <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
             </svg>
@@ -61,7 +68,6 @@ $receitas_12m = $data['total_receitas_geral'] ?? 0;
         <div class="metric-subtitle">Total acumulado</div>
     </div>
 
-    <!-- Despesas do Mês -->
     <div class="metric-card">
         <div class="metric-icon despesas">📉</div>
         <div class="metric-label">
@@ -77,7 +83,6 @@ $receitas_12m = $data['total_receitas_geral'] ?? 0;
         <div class="metric-subtitle">Total acumulado</div>
     </div>
 
-    <!-- Saldo do Mês -->
     <div class="metric-card">
         <div class="metric-icon saldo">💹</div>
         <div class="metric-label">
@@ -89,21 +94,19 @@ $receitas_12m = $data['total_receitas_geral'] ?? 0;
                 <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
                     <path d="m7.247 11.14 4.796-5.481c.566-.647 1.766-.133 1.766.753v9.592a1 1 0 0 1-.753.753l-5.48-4.796a1 1 0 0 1 0-1.506z"/>
                 </svg>
-                +<?php echo $data['total_receitas'] > 0 ? number_format(($saldo_mes / $data['total_receitas']) * 100, 2) : '0,00'; ?>%
+                +<?php echo $data['total_receitas'] > 0 ? number_format(($saldo_mes / $data['total_receitas']) * 100, 2, ',', '.') : '0,00'; ?>%
             <?php else: ?>
                 <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
                     <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
                 </svg>
-                <?php echo $data['total_receitas'] > 0 ? number_format(($saldo_mes / $data['total_receitas']) * 100, 2) : '0,00'; ?>%
+                <?php echo $data['total_receitas'] > 0 ? number_format(($saldo_mes / $data['total_receitas']) * 100, 2, ',', '.') : '0,00'; ?>%
             <?php endif; ?>
         </span>
         <div class="metric-subtitle">Receitas - Despesas</div>
     </div>
 </div>
 
-<!-- Seção de Gráficos -->
 <div class="charts-section">
-    <!-- Evolução do Patrimônio -->
     <div class="chart-card">
         <div class="chart-header">
             <h3 class="chart-title">Evolução Financeira (Últimos 12 Meses)</h3>
@@ -116,7 +119,6 @@ $receitas_12m = $data['total_receitas_geral'] ?? 0;
         </div>
     </div>
 
-    <!-- Distribuição por Categorias -->
     <div class="chart-card">
         <div class="chart-header">
             <h3 class="chart-title">Top 10 Categorias</h3>
@@ -127,7 +129,6 @@ $receitas_12m = $data['total_receitas_geral'] ?? 0;
     </div>
 </div>
 
-<!-- Tabela de Transações Recentes -->
 <div class="transactions-section">
     <div class="section-header">
         <h3 class="section-title">Últimos Lançamentos (<?php echo count($data['recent_transactions']); ?>)</h3>
@@ -222,8 +223,8 @@ $receitas_12m = $data['total_receitas_geral'] ?? 0;
 }
 
 .type-badge.ativo {
-    background: #e3f2fd;
-    color: #1565c0;
+    color: #1a73e8;
+    font-weight: 600;
 }
 
 .value-receita {

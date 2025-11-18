@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Esqueci minha Senha - FinControl</title>
-    <link rel="stylesheet" href="/fin-control/public/css/style.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/public/css/style.css">
 </head>
 <body>
 
@@ -19,14 +19,14 @@
         </div>
 
         <?php if (isset($success)): ?>
-            <div style="background: #d4edda; border: 1px solid #c3e6cb; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; color: #155724; font-size: 0.9rem; text-align: center;">
-                <strong>✅ <?php echo $success; ?></strong>
+            <div class="alert alert-success" style="text-align: center;">
+                <strong>✅ <?php echo htmlspecialchars($success); ?></strong>
             </div>
         <?php endif; ?>
 
         <?php if (isset($erro)): ?>
-            <div style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; color: #721c24; font-size: 0.9rem; text-align: center;">
-                <strong>❌ <?php echo $erro; ?></strong>
+            <div class="alert alert-error" style="text-align: center;">
+                <strong>❌ <?php echo htmlspecialchars($erro); ?></strong>
             </div>
         <?php endif; ?>
 
@@ -35,7 +35,7 @@
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" 
                        placeholder="seu@email.com" required autofocus>
-                <small style="color: var(--text-secondary); font-size: 0.85rem; display: block; margin-top: 0.5rem;">
+                <small class="form-help">
                     Digite o email cadastrado na sua conta
                 </small>
             </div>
@@ -54,5 +54,9 @@
     </div>
 </div>
 
+<script>
+    // Injeta BASE_URL para o caso de scripts futuros
+    window.BASE_URL = '<?php echo BASE_URL; ?>'; 
+</script>
 </body>
 </html>

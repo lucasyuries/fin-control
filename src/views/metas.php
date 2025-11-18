@@ -1,6 +1,13 @@
-<?php require_once __DIR__ . '/partials/header.php'; ?>
+<?php 
+// Arquivo: src/views/metas.php
+require_once __DIR__ . '/partials/header.php'; 
+?>
 
-<!-- Navegação de Abas -->
+<script>
+    // Define a variável BASE_URL globalmente para uso no JS
+    window.BASE_URL = '<?php echo BASE_URL; ?>'; 
+</script>
+
 <nav class="nav-tabs">
 	<a class="nav-link" href="<?php echo BASE_URL; ?>/dashboard">
 		<svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
@@ -24,19 +31,6 @@
 	</a>
 </nav>
 
-<?php if (isset($_SESSION['success'])): ?>
-	<div class="alert alert-success">
-		<?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
-	</div>
-<?php endif; ?>
-
-<?php if (isset($_SESSION['error'])): ?>
-	<div class="alert alert-error">
-		<?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
-	</div>
-<?php endif; ?>
-
-<!-- Cabeçalho da Página -->
 <div class="page-header">
 	<div>
 		<h1 class="page-title">Metas Financeiras</h1>
@@ -50,7 +44,6 @@
 	</button>
 </div>
 
-<!-- Metas em Andamento -->
 <section class="goals-section">
 	<h2 class="section-title">Metas em andamento</h2>
 	<?php if (empty($data['metas_em_andamento'])): ?>
@@ -70,7 +63,7 @@
 						<div class="progress-bar">
 							<div class="progress-fill" style="width: <?php echo min(100, $meta['progresso']['percentual']); ?>%"></div>
 						</div>
-						<span class="progress-label"><?php echo number_format($meta['progresso']['percentual'], 1); ?>%</span>
+						<span class="progress-label"><?php echo number_format($meta['progresso']['percentual'], 1, ',', '.'); ?>%</span>
 					</div>
 					<div class="goal-details">
 						<div class="goal-detail-row">
@@ -81,7 +74,7 @@
 							<span class="label">Faltam</span>
 							<strong class="value">R$ <?php echo number_format($meta['progresso']['falta'], 2, ',', '.'); ?></strong>
 						</div>
-						<?php if ($meta['meses_estimados'] && $meta['meses_estimados'] > 0): ?>
+						<?php if ($meta['meses_estimados'] !== null && $meta['meses_estimados'] > 0): ?>
 							<div class="goal-detail-row">
 								<span class="label">Estimativa</span>
 								<strong class="value">
@@ -109,7 +102,6 @@
 	<?php endif; ?>
 </section>
 
-<!-- Metas Concluídas -->
 <?php if (!empty($data['metas_concluidas'])): ?>
 <section class="goals-section">
 	<h2 class="section-title">Metas concluídas</h2>
@@ -135,7 +127,7 @@
 					</div>
 					<div class="goal-detail-row">
 						<span class="label">Concluído em</span>
-						<strong class="value"><?php echo date('F/y', strtotime($meta['data_conclusao'])); ?></strong>
+						<strong class="value"><?php echo date('m/Y', strtotime($meta['data_conclusao'] ?? date('Y-m-d'))); ?></strong>
 					</div>
 					<div class="goal-detail-row">
 						<span class="label">Objetivo</span>
@@ -148,7 +140,6 @@
 </section>
 <?php endif; ?>
 
-<!-- Modal de Meta -->
 <div id="goalModal" class="modal">
 	<div class="modal-content">
 		<div class="modal-header">
@@ -183,11 +174,12 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="variacao_anual">Estimativa de variação anual</label>
+				<label for="variacao_anual">Estimativa de variação anual (%)</label>
 				<div class="input-group">
 					<input type="text" id="variacao_anual" name="variacao_anual" class="form-control percent-input" placeholder="0,00">
 					<span class="input-suffix">%</span>
 				</div>
+				<p class="form-help">Informe a rentabilidade média anual esperada (sem considerar a inflação).</p>
 			</div>
 			<input type="hidden" name="tipo" value="patrimonio">
 			<div class="modal-actions">
@@ -198,305 +190,5 @@
 		</form>
 	</div>
 </div>
-
-<style>
-/* Metas - Visual moderno e alinhado ao sistema */
-.page-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	margin-bottom: 2rem;
-	gap: 2rem;
-}
-.page-title {
-	font-size: 1.75rem;
-	font-weight: 700;
-	color: var(--text-primary, #202124);
-	margin: 0;
-}
-.page-subtitle {
-	color: var(--text-secondary, #5f6368);
-	margin: 0.5rem 0 0 0;
-	font-size: 0.95rem;
-}
-.btn.btn-primary {
-	background: #1a73e8;
-	color: #fff;
-	border: none;
-	padding: 0.75rem 1.5rem;
-	border-radius: 8px;
-	font-weight: 500;
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	cursor: pointer;
-	transition: all 0.2s;
-	box-shadow: 0 2px 8px rgba(26, 115, 232, 0.08);
-}
-.btn.btn-primary:hover {
-	background: #1557b0;
-	transform: translateY(-1px);
-}
-.goals-section {
-	margin-bottom: 3rem;
-}
-.section-title {
-	font-size: 1.25rem;
-	font-weight: 600;
-	color: var(--text-primary, #202124);
-	margin-bottom: 1.5rem;
-}
-.goals-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-	gap: 1.5rem;
-}
-.goal-card {
-	background: #fff;
-	border: 1px solid #e8eaed;
-	border-radius: 12px;
-	padding: 1.5rem;
-	cursor: pointer;
-	transition: box-shadow 0.2s, transform 0.2s;
-	box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-}
-.goal-card:hover {
-	box-shadow: 0 4px 16px rgba(26, 115, 232, 0.10);
-	transform: translateY(-2px);
-}
-.goal-card.completed {
-	background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%);
-	border-color: #34a853;
-}
-.goal-icon {
-	font-size: 2rem;
-	margin-bottom: 1rem;
-}
-.goal-name {
-	font-size: 1.1rem;
-	font-weight: 600;
-	color: var(--text-primary, #202124);
-	margin-bottom: 1rem;
-}
-.goal-progress {
-	margin-bottom: 1.5rem;
-}
-.progress-bar {
-	height: 8px;
-	background: #f1f3f4;
-	border-radius: 4px;
-	overflow: hidden;
-	margin-bottom: 0.5rem;
-}
-.progress-fill {
-	height: 100%;
-	background: linear-gradient(90deg, #1a73e8 0%, #4285f4 100%);
-	border-radius: 4px;
-	transition: width 0.3s;
-}
-.progress-fill.completed {
-	background: linear-gradient(90deg, #34a853 0%, #2e7d32 100%);
-}
-.progress-label {
-	font-size: 0.85rem;
-	font-weight: 600;
-	color: #5f6368;
-}
-.goal-details {
-	display: flex;
-	flex-direction: column;
-	gap: 0.75rem;
-}
-.goal-detail-row {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-.goal-detail-row .label {
-	color: #5f6368;
-	font-size: 0.9rem;
-}
-.goal-detail-row .value {
-	color: #202124;
-	font-size: 0.95rem;
-}
-.goal-detail-row .value.primary {
-	color: #1a73e8;
-	font-weight: 700;
-}
-.empty-state {
-	text-align: center;
-	padding: 4rem 2rem;
-	background: #fff;
-	border: 2px dashed #e8eaed;
-	border-radius: 12px;
-}
-/* Modal metas */
-.modal {
-	display: none;
-	position: fixed;
-	z-index: 1000;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.5);
-	animation: fadeIn 0.2s ease;
-}
-.modal.active {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.modal-content {
-	background: #fff;
-	border-radius: 16px;
-	max-width: 500px;
-	width: 90%;
-	max-height: 90vh;
-	overflow-y: auto;
-	animation: slideUp 0.3s ease;
-}
-.modal-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 1.5rem;
-	border-bottom: 1px solid #e8eaed;
-}
-.modal-header h2 {
-	font-size: 1.25rem;
-	font-weight: 600;
-	margin: 0;
-}
-.modal-close {
-	background: none;
-	border: none;
-	font-size: 1.5rem;
-	cursor: pointer;
-	color: #5f6368;
-	width: 32px;
-	height: 32px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 50%;
-	transition: all 0.2s;
-}
-.modal-close:hover {
-	background: #f1f3f4;
-	color: #202124;
-}
-.modal form {
-	padding: 1.5rem;
-}
-.form-divider {
-	margin: 1.5rem 0;
-	text-align: center;
-	position: relative;
-}
-.form-divider::before {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 50%;
-	width: 100%;
-	height: 1px;
-	background: #e8eaed;
-}
-.form-divider span {
-	background: #fff;
-	padding: 0 1rem;
-	position: relative;
-	color: #5f6368;
-	font-size: 0.9rem;
-}
-.modal-actions {
-	display: flex;
-	gap: 0.75rem;
-	justify-content: flex-end;
-	margin-top: 2rem;
-}
-@keyframes fadeIn {
-	from { opacity: 0; }
-	to { opacity: 1; }
-}
-@keyframes slideUp {
-	from {
-		opacity: 0;
-		transform: translateY(20px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-@media (max-width: 768px) {
-	.page-header {
-		flex-direction: column;
-	}
-	.goals-grid {
-		grid-template-columns: 1fr;
-	}
-}
-</style>
-
-<script>
-let editingGoalId = null;
-function openGoalModal(mode, goalData = null) {
-	const modal = document.getElementById('goalModal');
-	const form = document.getElementById('goalForm');
-	const modalTitle = document.getElementById('modalTitle');
-	const submitBtn = document.getElementById('submitBtn');
-	const deleteBtn = document.getElementById('deleteBtn');
-	if (mode === 'create') {
-		modalTitle.textContent = 'Criar Meta';
-		submitBtn.textContent = 'Criar meta';
-		form.action = '<?php echo BASE_URL; ?>/metas/create';
-		form.reset();
-		deleteBtn.style.display = 'none';
-		editingGoalId = null;
-	} else {
-		modalTitle.textContent = 'Editar Meta';
-		submitBtn.textContent = 'Salvar alterações';
-		form.action = '<?php echo BASE_URL; ?>/metas/update/' + goalData.id;
-		deleteBtn.style.display = 'block';
-		editingGoalId = goalData.id;
-		document.getElementById('nome').value = goalData.nome;
-		document.getElementById('valor_objetivo').value = parseFloat(goalData.valor_objetivo).toFixed(2).replace('.', ',');
-		document.getElementById('aporte_mensal').value = parseFloat(goalData.aporte_mensal).toFixed(2).replace('.', ',');
-		document.getElementById('variacao_anual').value = parseFloat(goalData.variacao_anual).toFixed(2).replace('.', ',');
-	}
-	modal.classList.add('active');
-}
-function closeGoalModal() {
-	const modal = document.getElementById('goalModal');
-	modal.classList.remove('active');
-}
-function deleteGoal() {
-	if (!editingGoalId) return;
-	if (confirm('Tem certeza que deseja excluir esta meta?')) {
-		window.location.href = '<?php echo BASE_URL; ?>/metas/delete/' + editingGoalId;
-	}
-}
-document.getElementById('goalModal').addEventListener('click', function(e) {
-	if (e.target === this) {
-		closeGoalModal();
-	}
-});
-document.querySelectorAll('.money-input').forEach(input => {
-	input.addEventListener('input', function(e) {
-		let value = e.target.value.replace(/\D/g, '');
-		value = (value / 100).toFixed(2);
-		e.target.value = value.replace('.', ',');
-	});
-});
-document.querySelectorAll('.percent-input').forEach(input => {
-	input.addEventListener('input', function(e) {
-		let value = e.target.value.replace(/[^\d,]/g, '');
-		e.target.value = value;
-	});
-});
-</script>
 
 <?php require_once __DIR__ . '/partials/footer.php'; ?>

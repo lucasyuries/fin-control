@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro - FinControl</title>
-    <link rel="stylesheet" href="/fin-control/public/css/style.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/public/css/style.css">
 </head>
 <body>
 
@@ -17,6 +17,12 @@
             <h1>FinControl</h1>
             <p>Crie sua conta e comece a organizar suas finanças</p>
         </div>
+        
+        <?php if (isset($data['erros']['geral'])): ?>
+             <div class="alert alert-error" style="text-align: center; margin-bottom: 1.5rem; color: var(--danger-color); background: rgba(234, 67, 53, 0.1); border-color: var(--danger-color);">
+                <strong>Erro:</strong> <?php echo htmlspecialchars($data['erros']['geral']); ?>
+            </div>
+        <?php endif; ?>
 
         <form action="<?php echo BASE_URL; ?>/register" method="POST">
             <div class="form-group">
@@ -72,56 +78,6 @@
     </div>
 </div>
 
-
-<script>
-const senhaInput = document.getElementById('senha');
-const rules = {
-    length: document.getElementById('rule-length'),
-    uppercase: document.getElementById('rule-uppercase'),
-    lowercase: document.getElementById('rule-lowercase'),
-    special: document.getElementById('rule-special')
-};
-
-senhaInput.addEventListener('input', () => {
-    const senha = senhaInput.value;
-    
-    // Validação de comprimento
-    if (senha.length >= 8) {
-        rules.length.style.color = 'var(--success-color)';
-        rules.length.style.textDecoration = 'line-through';
-    } else {
-        rules.length.style.color = 'var(--text-secondary)';
-        rules.length.style.textDecoration = 'none';
-    }
-    
-    // Validação de maiúscula
-    if (/[A-Z]/.test(senha)) {
-        rules.uppercase.style.color = 'var(--success-color)';
-        rules.uppercase.style.textDecoration = 'line-through';
-    } else {
-        rules.uppercase.style.color = 'var(--text-secondary)';
-        rules.uppercase.style.textDecoration = 'none';
-    }
-    
-    // Validação de minúscula
-    if (/[a-z]/.test(senha)) {
-        rules.lowercase.style.color = 'var(--success-color)';
-        rules.lowercase.style.textDecoration = 'line-through';
-    } else {
-        rules.lowercase.style.color = 'var(--text-secondary)';
-        rules.lowercase.style.textDecoration = 'none';
-    }
-    
-    // Validação de caractere especial
-    if (/[^A-Za-z0-9]/.test(senha)) {
-        rules.special.style.color = 'var(--success-color)';
-        rules.special.style.textDecoration = 'line-through';
-    } else {
-        rules.special.style.color = 'var(--text-secondary)';
-        rules.special.style.textDecoration = 'none';
-    }
-});
-</script>
 
 </body>
 </html>

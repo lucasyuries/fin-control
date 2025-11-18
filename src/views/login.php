@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - FinControl</title>
-    <link rel="stylesheet" href="/fin-control/public/css/style.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/public/css/style.css">
 </head>
 <body>
 
@@ -18,15 +18,15 @@
             <p>Controle suas finanças de forma inteligente</p>
         </div>
 
-        <?php if (isset($_GET['success'])): ?>
-            <div style="background: #d4edda; border: 1px solid #c3e6cb; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; color: #155724; font-size: 0.9rem;">
-                <strong>✅ <?php echo htmlspecialchars($_GET['success']); ?></strong>
+        <?php if (isset($success)): ?>
+            <div class="alert alert-success" style="text-align: center; margin-bottom: 1.5rem; color: #155724; background: #d4edda; border-color: #c3e6cb;">
+                <strong>✅ <?php echo htmlspecialchars($success); ?></strong>
             </div>
         <?php endif; ?>
 
         <?php if (isset($erro)): ?>
-            <div style="background: rgba(234, 67, 53, 0.1); border: 1px solid var(--danger-color); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; color: var(--danger-color); font-size: 0.9rem;">
-                <strong>Erro:</strong> <?php echo $erro; ?>
+            <div class="alert alert-error" style="text-align: center; margin-bottom: 1.5rem; color: var(--danger-color); background: rgba(234, 67, 53, 0.1); border-color: var(--danger-color);">
+                <strong>Erro:</strong> <?php echo htmlspecialchars($erro); ?>
             </div>
         <?php endif; ?>
 

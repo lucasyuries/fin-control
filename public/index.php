@@ -1,9 +1,22 @@
 <?php
+// Arquivo: public/index.php
+// Ponto de entrada do sistema FinControl
+
+// Carrega as configurações (BASE_URL e DB)
+require_once __DIR__ . '/../config/config.php';
+
+// Carrega classes de Core (Sessão, DB)
+require_once __DIR__ . '/../src/core/Session.php'; 
+
+// Carrega os Controllers
 require_once __DIR__ . '/../src/controllers/AuthController.php';
 require_once __DIR__ . '/../src/controllers/DashboardController.php';
 require_once __DIR__ . '/../src/controllers/TransactionController.php';
 require_once __DIR__ . '/../src/controllers/ProfileController.php';
 require_once __DIR__ . '/../src/controllers/GoalController.php';
+
+// INICIALIZA A SESSÃO NO PONTO DE ENTRADA DO PROJETO
+Session::init();
 
 $url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : '';
 $url = filter_var($url, FILTER_SANITIZE_URL);
@@ -26,12 +39,7 @@ switch ($url) {
         $_SERVER['REQUEST_METHOD'] == 'POST' ? $authController->resetPassword() : $authController->showResetPasswordForm();
         break;
     case 'logout':
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-        session_unset();
-        session_destroy();
-        setcookie(session_name(), '', time() - 3600, '/');
+        Session::destroy(); // Usa o Session Core
         header('Location: ' . BASE_URL . '/login');
         exit();
     case 'dashboard':
@@ -54,6 +62,10 @@ switch ($url) {
         $transactionController = new TransactionController();
         $transactionController->index();
         break;
+    case 'lancamentos/criar':
+        $transactionController = new TransactionController();
+        $transactionController->criar();
+        break;
     case 'lancamentos/compensar':
         $transactionController = new TransactionController();
         $transactionController->compensar();
@@ -74,6 +86,7 @@ switch ($url) {
         $goalController = new GoalController();
         $goalController->create();
         break;
+    // Rotas de edição e exclusão com ID na URL
     case (preg_match('/^metas\\/update\\/(\\d+)$/', $url, $matches) ? true : false):
         $goalController = new GoalController();
         $goalController->update($matches[1]);
@@ -83,7 +96,8 @@ switch ($url) {
         $goalController->delete($matches[1]);
         break;
     default:
+        // Rota padrão (geralmente redireciona para login ou dashboard)
         $authController = new AuthController();
-        $authController->login();
+        $authController->login(); 
         break;
 }
