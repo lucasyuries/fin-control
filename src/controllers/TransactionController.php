@@ -16,20 +16,39 @@ class TransactionController {
     }
 
     public function index() {
-        $usuario_id = $_SESSION['user_id'];
-        $transacoes = $this->transactionModel->findAllByUserId($usuario_id);
-        $categorias = $this->categoryModel->findAllByUserId($usuario_id); 
-        
-        $data = [
-            'transacoes' => $transacoes,
-            'categorias' => $categorias,
-            'success' => Session::getFlash('success'),
-            'error' => Session::getFlash('error')
-        ];
-        
-        $pageTitle = 'Lançamentos';
-        require_once __DIR__ . '/../views/lancamentos.php';
+    $usuario_id = $_SESSION['user_id'];
+    $categorias = $this->categoryModel->findAllByUserId($usuario_id); 
+    
+    // Lê parâmetros de filtro da URL
+    $tipo = filter_input(INPUT_GET, 'tipo', FILTER_SANITIZE_STRING);
+    $data_inicio = filter_input(INPUT_GET, 'data_inicio', FILTER_SANITIZE_STRING);
+    $data_fim = filter_input(INPUT_GET, 'data_fim', FILTER_SANITIZE_STRING);
+
+    // Se o filtro de tipo não for definido na URL, define 'todos' como padrão para a view
+    if (!$tipo) {
+        $tipo = 'todos';
     }
+
+    // Se o tipo for 'todos' na URL, anula o filtro para buscar todos os tipos no Model
+    $filtro_para_model = ($tipo === 'todos') ? null : $tipo;
+    
+    // Chama o Model com os filtros, reduzindo o tráfego de dados!
+    $transacoes = $this->transactionModel->findAllByUserId($usuario_id, $filtro_para_model, $data_inicio, $data_fim);
+    
+    // Prepara os dados de volta para a View
+    $data = [
+        'transacoes' => $transacoes,
+        'categorias' => $categorias,
+        'filtro_tipo' => $tipo, // Passa o tipo de volta para manter o botão ativo na view
+        'filtro_data_inicio' => $data_inicio,
+        'filtro_data_fim' => $data_fim,
+        'success' => Session::getFlash('success'),
+        'error' => Session::getFlash('error')
+    ];
+    
+    $pageTitle = 'Lançamentos';
+    require_once __DIR__ . '/../views/lancamentos.php';
+}
 
     // Cria um novo lançamento
     public function criar() {

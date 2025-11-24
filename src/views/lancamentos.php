@@ -1,6 +1,12 @@
 <?php 
 // Arquivo: src/views/lancamentos.php
 require_once __DIR__ . '/partials/header.php'; 
+
+
+// Extrair variáveis de filtro do array $data
+$filtro_tipo = $data['filtro_tipo'] ?? 'todos';
+$filtro_data_inicio = $data['filtro_data_inicio'] ?? '';
+$filtro_data_fim = $data['filtro_data_fim'] ?? '';
 ?>
 
 <script>
@@ -48,17 +54,43 @@ require_once __DIR__ . '/partials/header.php';
     </button>
 </div>
 
-<div class="transaction-filters">
-    <button class="filter-btn active" onclick="filterTransactions('todos')" data-filter="todos">
-        Todos
-    </button>
-    <button class="filter-btn" onclick="filterTransactions('receita')" data-filter="receita">
-        <span class="filter-badge receita">Receitas</span>
-    </button>
-    <button class="filter-btn" onclick="filterTransactions('despesa')" data-filter="despesa">
-        <span class="filter-badge despesa">Despesas</span>
-    </button>
-</div>
+<form id="filterForm" method="GET" action="<?php echo BASE_URL; ?>/lancamentos">
+    
+    <div class="transaction-filters" style="margin-bottom: 1rem;">
+        <input type="hidden" name="tipo" id="filterTipoInput" value="<?php echo htmlspecialchars($filtro_tipo); ?>">
+        
+        <button type="submit" class="filter-btn <?php echo $filtro_tipo === 'todos' ? 'active' : ''; ?>" 
+                onclick="document.getElementById('filterTipoInput').value = 'todos';">
+            Todos
+        </button>
+        
+        <button type="submit" class="filter-btn <?php echo $filtro_tipo === 'receita' ? 'active' : ''; ?>" 
+                onclick="document.getElementById('filterTipoInput').value = 'receita';">
+            <span class="filter-badge receita">Receitas</span>
+        </button>
+        
+        <button type="submit" class="filter-btn <?php echo $filtro_tipo === 'despesa' ? 'active' : ''; ?>" 
+                onclick="document.getElementById('filterTipoInput').value = 'despesa';">
+            <span class="filter-badge despesa">Despesas</span>
+        </button>
+    </div>
+    
+    <div class="transaction-filters" style="gap: 1rem; margin-bottom: 2rem;">
+        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+            <label for="data_inicio" class="form-label">Data Início</label>
+            <input type="date" class="form-control" id="data_inicio" name="data_inicio" 
+                   value="<?php echo htmlspecialchars($filtro_data_inicio); ?>">
+        </div>
+        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+            <label for="data_fim" class="form-label">Data Fim</label>
+            <input type="date" class="form-control" id="data_fim" name="data_fim" 
+                   value="<?php echo htmlspecialchars($filtro_data_fim); ?>">
+        </div>
+        <div class="form-group" style="align-self: flex-end; margin-bottom: 0;">
+            <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Filtrar</button>
+        </div>
+    </div>
+</form>
 
 <div class="transactions-card">
     <div class="table-responsive">

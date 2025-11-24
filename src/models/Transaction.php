@@ -80,34 +80,39 @@ class Transaction {
         ];
     }
     
-    // Retorna totais por tipo (receita, despesa) acumulados
     public function getTotalsByType($usuario_id) {
+        // 1. Total Receitas Acumuladas
         $this->db->query("
-            SELECT 
-                tipo,
-                COALESCE(SUM(valor), 0) as total
+            SELECT COALESCE(SUM(valor), 0) as total 
             FROM transactions 
-            WHERE usuario_id = :usuario_id
-            GROUP BY tipo
+            WHERE usuario_id = :usuario_id AND tipo = 'receita'
         ");
         $this->db->bind(':usuario_id', $usuario_id);
-        $results = $this->db->resultSet();
-        
-        $totals = ['receitas' => 0.00, 'despesas' => 0.00];
-        foreach($results as $row) {
-            $totals[$row['tipo']] = $row['total'];
-        }
-        
-        return $totals;
-    }
+        $receitas = $this->db->single();
 
+        // 2. Total Despesas Acumuladas
+        $this->db->query("
+            SELECT COALESCE(SUM(valor), 0) as total 
+            FROM transactions 
+            WHERE usuario_id = :usuario_id AND tipo = 'despesa'
+        ");
+        $this->db->bind(':usuario_id', $usuario_id);
+        $despesas = $this->db->single();
+        
+        // Garante que o valor é tratado como float
+        return [
+            'receitas' => (float)($receitas['total'] ?? 0.00),
+            'despesas' => (float)($despesas['total'] ?? 0.00)
+        ];
+    }
+    
     // Retorna patrimônio total (receitas - despesas)
+    // Este método usa getTotalsByType, e agora funcionará corretamente.
     public function getPatrimonioTotal($usuario_id) {
         if (!isset($usuario_id)) return 0.00;
         $totals = $this->getTotalsByType($usuario_id);
         return $totals['receitas'] - $totals['despesas'];
     }
-    
     // Retorna dados para o gráfico mensal (últimos 12 meses)
     public function getMonthlyChartData($usuario_id) {
         if (!isset($usuario_id)) return [];
@@ -146,20 +151,51 @@ class Transaction {
         return $this->db->resultSet();
     }
     
-    // Busca todas as transações do usuário
-    public function findAllByUserId($usuario_id) {
+    // Busca todas as transações do usuário, aceitando filtros opcionais
+    public function findAllByUserId($usuario_id, $tipo = null, $data_inicio = null, $data_fim = null) {
         if (!isset($usuario_id)) return [];
-        $this->db->query("
+
+        $sql = "
             SELECT t.*, c.nome as categoria_nome 
             FROM transactions t
             LEFT JOIN categories c ON t.categoria_id = c.id
             WHERE t.usuario_id = :usuario_id 
-            ORDER BY t.data DESC, t.created_at DESC
-        ");
+        ";
+        
+        // Filtro por tipo
+        if ($tipo && in_array($tipo, ['receita', 'despesa'])) {
+            $sql .= " AND t.tipo = :tipo";
+        }
+        
+        // Filtro por data de início
+        if ($data_inicio) {
+            $sql .= " AND t.data >= :data_inicio";
+        }
+        
+        // Filtro por data de fim
+        if ($data_fim) {
+            $sql .= " AND t.data <= :data_fim";
+        }
+        
+        $sql .= " ORDER BY t.data DESC, t.created_at DESC";
+        
+        $this->db->query($sql);
         $this->db->bind(':usuario_id', $usuario_id);
+        
+        // Bind dos parâmetros
+        if ($tipo && in_array($tipo, ['receita', 'despesa'])) {
+            $this->db->bind(':tipo', $tipo);
+        }
+        if ($data_inicio) {
+            $this->db->bind(':data_inicio', $data_inicio);
+        }
+        if ($data_fim) {
+            $this->db->bind(':data_fim', $data_fim);
+        }
+        
         return $this->db->resultSet();
     }
-    
+        
     // Busca uma única transação pelo ID
     public function findById($id, $usuario_id) {
         $this->db->query("

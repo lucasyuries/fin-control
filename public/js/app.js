@@ -4,12 +4,11 @@
 // Ex: window.BASE_URL, window.allTransactions, window.allCategories
 
 // =========================================================
-// === CHART.JS E DASHBOARD LOGIC (Original) ===
+// === CHART.JS E DASHBOARD LOGIC (ROBUSTO) ===
 // =========================================================
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof Chart === 'undefined') {
         console.error('Chart.js não foi carregado!');
-        // Permite que outros scripts rodem mesmo sem Chart.js
     }
 
     // Dados vêm de variáveis globais definidas no PHP
@@ -27,79 +26,109 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // GRÁFICO 1: Evolução Mensal (Linha)
     const patrimonioCanvas = document.getElementById('patrimonioChart');
-    if (patrimonioCanvas && chartData && chartData.length > 0) {
+    if (patrimonioCanvas && chartData) { 
         const ctx = patrimonioCanvas.getContext('2d');
         
-        const monthlyData = {};
+        // --- CÁLCULO ROBUSTO: GARANTIR OS ÚLTIMOS 12 MESES CALENDÁRIOS ---
+        const monthlyDataMap = new Map();
+        const today = new Date();
+        // Formato para label (Ex: "Nov/25")
+        const monthFormatter = new Intl.DateTimeFormat('pt-BR', { month: 'short', year: '2-digit' });
+
+        // 1. Criar o mapa com os últimos 12 meses, garantindo labels e zeros
+        for (let i = 11; i >= 0; i--) {
+            const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            const mesKey = date.toISOString().slice(0, 7); // Ex: "2025-01"
+            // Garante que o label seja formatado corretamente e sem ponto final
+            const label = monthFormatter.format(date).replace('.', ''); 
+            
+            monthlyDataMap.set(mesKey, {
+                label: label,
+                receitas: 0,
+                despesas: 0
+            });
+        }
+
+        // 2. Popular o mapa com dados reais do PHP
         chartData.forEach(item => {
-            const mes = item.mes;
-            if (!monthlyData[mes]) {
-                monthlyData[mes] = { mes: mes, label: item.label || mes, receitas: 0, despesas: 0 };
-            }
-            if (item.tipo === 'receita') {
-                monthlyData[mes].receitas = parseFloat(item.total || 0);
-            } else if (item.tipo === 'despesa') {
-                monthlyData[mes].despesas = parseFloat(item.total || 0);
-            }
-        });
-        
-        const sortedMonths = Object.keys(monthlyData).sort();
-        const labels = sortedMonths.map(mes => monthlyData[mes].label);
-        const receitasData = sortedMonths.map(mes => monthlyData[mes].receitas);
-        const despesasData = sortedMonths.map(mes => monthlyData[mes].despesas);
-        
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Receitas',
-                        data: receitasData,
-                        borderColor: colors.receita,
-                        backgroundColor: colors.gradient.receita,
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#fff', pointBorderWidth: 2
-                    },
-                    {
-                        label: 'Despesas',
-                        data: despesasData,
-                        borderColor: colors.despesa,
-                        backgroundColor: colors.gradient.despesa,
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#fff', pointBorderWidth: 2
-                    }
-                ]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
-                plugins: {
-                    legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 15, font: { size: 12, weight: 500 } } },
-                    tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)', padding: 12, titleFont: { size: 13, weight: 600 }, bodyFont: { size: 12 },
-                        callbacks: {
-                            label: (context) => {
-                                let label = context.dataset.label || '';
-                                if (label) label += ': ';
-                                label += 'R$ ' + context.parsed.y.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                return label;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: { beginAtZero: true, ticks: { callback: (value) => 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }), font: { size: 11 } }, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
-                    x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+            const mesKey = item.mes;
+            if (monthlyDataMap.has(mesKey)) {
+                const dataEntry = monthlyDataMap.get(mesKey);
+                if (item.tipo === 'receita') {
+                    dataEntry.receitas = parseFloat(item.total || 0);
+                } else if (item.tipo === 'despesa') {
+                    dataEntry.despesas = parseFloat(item.total || 0);
                 }
             }
         });
+
+        // 3. Converter para arrays ordenados para Chart.js
+        const sortedData = Array.from(monthlyDataMap.entries())
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(entry => entry[1]); // Pega apenas os objetos de dados
+            
+        const labels = sortedData.map(data => data.label);
+        const receitasData = sortedData.map(data => data.receitas);
+        const despesasData = sortedData.map(data => data.despesas);
+        
+        
+        if (sortedData.length > 0) { 
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Receitas',
+                            data: receitasData,
+                            borderColor: colors.receita,
+                            backgroundColor: colors.gradient.receita,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#fff', pointBorderWidth: 2
+                        },
+                        {
+                            label: 'Despesas',
+                            data: despesasData,
+                            borderColor: colors.despesa,
+                            backgroundColor: colors.gradient.despesa,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#fff', pointBorderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 15, font: { size: 12, weight: 500 } } },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)', padding: 12, titleFont: { size: 13, weight: 600 }, bodyFont: { size: 12 },
+                            callbacks: {
+                                label: (context) => {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    label += 'R$ ' + context.parsed.y.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: (value) => 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }), font: { size: 11 } }, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
+                        x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+                    }
+                }
+            });
+        } else if (patrimonioCanvas) {
+            patrimonioCanvas.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;"><p>Adicione lançamentos para visualizar o gráfico</p></div>';
+        }
     } else if (patrimonioCanvas) {
         patrimonioCanvas.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;"><p>Adicione lançamentos para visualizar o gráfico</p></div>';
     }
+
 
     // GRÁFICO 2: Categorias (Pizza)
     const categoryCanvas = document.getElementById('categoryChart');
@@ -111,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const categoria = item.categoria || 'Sem categoria';
             const total = parseFloat(item.total || 0);
             
-            // Focamos apenas nas despesas para a distribuição de categorias
+            // FILTRO DE GASTRS (DESPESAS)
             if (item.tipo === 'despesa') {
                 categoryMap.set(categoria, (categoryMap.get(categoria) || 0) + total);
             }
@@ -222,31 +251,6 @@ function updateCategories(selectTipoId, selectCategoriaId, selectedCategoryId = 
             }
         });
     }
-}
-
-
-function filterTransactions(type) {
-    const rows = document.querySelectorAll('#transactionsTableBody tr');
-    const buttons = document.querySelectorAll('.filter-btn');
-    
-    buttons.forEach(btn => {
-        if (btn.dataset.filter === type) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-    
-    rows.forEach(row => {
-        const rowType = row.dataset.tipo;
-        if (!rowType) return;
-
-        if (type === 'todos' || rowType === type) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
 }
 
 
@@ -455,3 +459,54 @@ setupPasswordValidation('senha', { // register.php
 setupPasswordValidation('nova_senha', { // profile.php e reset-password.php
     length: 'rule-length', uppercase: 'rule-uppercase', lowercase: 'rule-lowercase', special: 'rule-special'
 });
+
+// File: public/js/app.js (Rewriting data preparation for GRÁFICO 1)
+// ... (rest of the file) ...
+// GRÁFICO 1: Evolução Mensal (Linha)
+const patrimonioCanvas = document.getElementById('patrimonioChart');
+if (patrimonioCanvas && chartData) { // Note: Removed chartData.length > 0 check here
+    const ctx = patrimonioCanvas.getContext('2d');
+    
+    // --- NOVO CÁLCULO: GARANTIR OS ÚLTIMOS 12 MESES ---
+    const monthlyDataMap = new Map();
+    const today = new Date();
+    const monthFormatter = new Intl.DateTimeFormat('pt-BR', { month: 'short', year: '2-digit' });
+
+    // 1. Criar o mapa com os últimos 12 meses, garantindo labels e zeros
+    for (let i = 11; i >= 0; i--) {
+        const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        const mesKey = date.toISOString().slice(0, 7); // Ex: "2025-01"
+        const label = monthFormatter.format(date).replace('.', ''); // Ex: "Jan/25"
+        
+        monthlyDataMap.set(mesKey, {
+            label: label,
+            receitas: 0,
+            despesas: 0
+        });
+    }
+
+    // 2. Popular o mapa com dados reais do PHP
+    chartData.forEach(item => {
+        const mesKey = item.mes;
+        if (monthlyDataMap.has(mesKey)) {
+            const dataEntry = monthlyDataMap.get(mesKey);
+            if (item.tipo === 'receita') {
+                dataEntry.receitas = parseFloat(item.total || 0);
+            } else if (item.tipo === 'despesa') {
+                dataEntry.despesas = parseFloat(item.total || 0);
+            }
+        }
+    });
+
+    // 3. Converter para arrays ordenados
+    const sortedData = Array.from(monthlyDataMap.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(entry => entry[1]); // Pega apenas os objetos de dados
+        
+    const labels = sortedData.map(data => data.label);
+    const receitasData = sortedData.map(data => data.receitas);
+    const despesasData = sortedData.map(data => data.despesas);
+    
+    // ... (rest of chart rendering logic using labels, receitasData, despesasData) ...
+}
+// ... (rest of the file, including Pie Chart logic, remains the same) ...

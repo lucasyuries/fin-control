@@ -140,53 +140,64 @@ require_once __DIR__ . '/partials/header.php';
 </section>
 <?php endif; ?>
 
-<div id="goalModal" class="modal">
-	<div class="modal-content">
+<div class="modal-overlay" id="goalModal" onclick="closeGoalModal()">
+	<div class="modal-container" onclick="event.stopPropagation()">
 		<div class="modal-header">
 			<h2 id="modalTitle">Criar Meta</h2>
-			<button class="modal-close" onclick="closeGoalModal()">&times;</button>
+			<button class="modal-close" onclick="closeGoalModal()">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                </svg>
+            </button>
 		</div>
+        
 		<form id="goalForm" method="POST" action="<?php echo BASE_URL; ?>/metas/create">
 			<input type="hidden" id="goalId" name="goal_id">
-			<div class="form-group">
-				<label>Meta de Patrimônio</label>
-				<p class="form-help">Defina uma meta de patrimônio que melhor se alinhe com seu perfil de investimento e seus objetivos pessoais.</p>
-			</div>
-			<div class="form-group">
-				<label for="nome">Escolha uma categoria para sua meta</label>
-				<input type="text" id="nome" name="nome" class="form-control" placeholder="Ex: Aposentadoria, Viagem, Casa própria" required>
-			</div>
-			<div class="form-group">
-				<label for="valor_objetivo">Valor total</label>
-				<div class="input-group">
-					<span class="input-prefix">R$</span>
-					<input type="text" id="valor_objetivo" name="valor_objetivo" class="form-control money-input" placeholder="0,00" required>
-				</div>
-			</div>
-			<div class="form-divider">
-				<span>Como você planeja alcançar essa meta?</span>
-			</div>
-			<div class="form-group">
-				<label for="aporte_mensal">Aporte mensal</label>
-				<div class="input-group">
-					<span class="input-prefix">R$</span>
-					<input type="text" id="aporte_mensal" name="aporte_mensal" class="form-control money-input" placeholder="0,00">
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="variacao_anual">Estimativa de variação anual (%)</label>
-				<div class="input-group">
-					<input type="text" id="variacao_anual" name="variacao_anual" class="form-control percent-input" placeholder="0,00">
-					<span class="input-suffix">%</span>
-				</div>
-				<p class="form-help">Informe a rentabilidade média anual esperada (sem considerar a inflação).</p>
-			</div>
-			<input type="hidden" name="tipo" value="patrimonio">
-			<div class="modal-actions">
-				<button type="button" class="btn btn-secondary" onclick="closeGoalModal()">Cancelar</button>
-				<button type="button" id="deleteBtn" class="btn btn-danger" onclick="deleteGoal()" style="display: none;">Deletar meta</button>
-				<button type="submit" class="btn btn-primary" id="submitBtn">Criar meta</button>
-			</div>
+            
+            <div class="modal-form">
+                <div class="form-group">
+                    <label>Meta de Patrimônio</label>
+                    <p class="form-help">Defina uma meta de patrimônio que melhor se alinhe com seu perfil de investimento e seus objetivos pessoais.</p>
+                </div>
+                <div class="form-group">
+                    <label for="nome">Escolha uma categoria para sua meta</label>
+                    <input type="text" id="nome" name="nome" class="form-control" placeholder="Ex: Aposentadoria, Viagem, Casa própria" required>
+                </div>
+                <div class="form-group">
+                    <label for="valor_objetivo">Valor total</label>
+                    <div class="input-group">
+                        <span class="input-prefix">R$</span>
+                        <input type="text" id="valor_objetivo" name="valor_objetivo" class="form-control money-input" placeholder="0,00" required>
+                    </div>
+                </div>
+                <div class="form-divider">
+                    <span>Como você planeja alcançar essa meta?</span>
+                </div>
+                <div class="form-group">
+                    <label for="aporte_mensal">Aporte mensal</label>
+                    <div class="input-group">
+                        <span class="input-prefix">R$</span>
+                        <input type="text" id="aporte_mensal" name="aporte_mensal" class="form-control money-input" placeholder="0,00">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="variacao_anual">Estimativa de variação anual (%)</label>
+                    <div class="input-group">
+                        <input type="text" id="variacao_anual" name="variacao_anual" class="form-control percent-input" placeholder="0,00">
+                        <span class="input-suffix">%</span>
+                    </div>
+                    <p class="form-help">Informe a rentabilidade média anual esperada (sem considerar a inflação).</p>
+                </div>
+                <input type="hidden" name="tipo" value="patrimonio">
+            </div>
+            
+            <div class="modal-footer">
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeGoalModal()">Cancelar</button>
+                    <button type="button" id="deleteBtn" class="btn btn-danger" onclick="deleteGoal()" style="display: none;">Deletar meta</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Criar meta</button>
+                </div>
+            </div>
 		</form>
 	</div>
 </div>
